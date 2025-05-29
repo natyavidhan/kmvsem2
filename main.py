@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 import os
 
 from dotenv import load_dotenv
@@ -9,6 +9,10 @@ from google import genai
 client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
 
 app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 @app.route('/dms/<q>')
 def home(q):

@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KMV Cheatsheet</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0; /* Remove body padding, will be handled by container */
+            background-color: #121212; /* Dark background */
+            color: #e0e0e0; /* Light text color for body */
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 800px;
+            margin: 40px auto; /* Center container and add top/bottom margin */
+            padding: 20px;
+            background-color: #1e1e1e; /* Slightly lighter dark for content area */
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            color: #ffffff; /* Bright white for headings */
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        h3 {
+            color: #bb86fc; /* Accent color for subheadings */
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #c0c0c0; /* Slightly dimmer light color for paragraphs */
+            margin-bottom: 10px; /* Adjusted margin */
+        }
+        pre {
+            background-color: #2c2c2c; /* Darker background for code blocks */
+            color: #d4d4d4; /* Light text for code */
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #333; /* Subtle border */
+            overflow-x: auto; /* Handle long lines of code */
+            font-family: 'Courier New', Courier, monospace;
+            margin-top: 5px; /* Add some space above pre */
+            margin-bottom: 20px; /* Add some space below pre */
+        }
+        /* Add a style for links if you plan to have them */
+        a {
+            color: #bb86fc; /* A modern accent color for links */
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        label {
+            color: #c0c0c0;
+            margin-right: 10px;
+        }
+        select {
+            background-color: #2c2c2c;
+            color: #d4d4d4;
+            border: 1px solid #333;
+            padding: 8px;
+            border-radius: 5px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-width: 100px; /* Ensure dropdowns have a decent width */
+        }
+        .controls {
+            margin-bottom: 25px;
+            text-align: center; /* Center the dropdown */
+            display: flex; /* Align label and select nicely */
+            justify-content: center;
+            align-items: center;
+            gap: 10px; /* Space between items in controls */
+        }
+        .subject-controls { /* Specific class for subject controls if needed for spacing */
+            margin-bottom: 15px;
+        }
+        .question-controls { /* Specific class for question controls */
+            margin-bottom: 25px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>KMV Cheatsheet</h1>
+        <!-- <h3>Made with ❤️ by Elon Musk Ka Bhai</h3> -->
+
+        <div class="controls subject-controls">
+            <label for="subjectSelect">Select Subject:</label>
+            <select id="subjectSelect">
+                <!-- Options will be populated by JavaScript -->
+            </select>
+        </div>
+
+        <div class="controls question-controls">
+            <label for="questionNumber">Select Question Number:</label>
+            <select id="questionNumber">
+                <!-- Options will be populated by JavaScript -->
+            </select>
+        </div>
+
+        <p>Run the following code to get questions on the terminal:</p>
+        <pre id="curlCommandTerminal"></pre>
+
+        <p>To place it inside a file, run the following command:</p>
+        <pre id="curlCommandFile"></pre>
+    </div>
+
+    <script>
+        const subjectSelect = document.getElementById('subjectSelect');
+        const questionSelect = document.getElementById('questionNumber');
+        const curlTerminalPre = document.getElementById('curlCommandTerminal');
+        const curlFilePre = document.getElementById('curlCommandFile');
+
+        const subjectsData = {
+            "DMS": {
+                baseUrl: "https://kmvsem2.vercel.app/dms/",
+                maxQuestions: 8,
+                filePrefix: "q"
+            }
+            // Add more subjects here
+        };
+
+        function updateCommands() {
+            const selectedSubjectKey = subjectSelect.value;
+            const selectedQuestionNum = questionSelect.value;
+            const subjectInfo = subjectsData[selectedSubjectKey];
+
+            if (!subjectInfo || !selectedQuestionNum) {
+                curlTerminalPre.textContent = "Please select a subject and question.";
+                curlFilePre.textContent = "";
+                return;
+            }
+
+            curlTerminalPre.textContent = `curl.exe ${subjectInfo.baseUrl}${selectedQuestionNum}`;
+            curlFilePre.textContent = `curl.exe ${subjectInfo.baseUrl}${selectedQuestionNum} > ${subjectInfo.filePrefix}${selectedQuestionNum}.py`;
+        }
+
+        function populateQuestionDropdown(subjectKey) {
+            const subjectInfo = subjectsData[subjectKey];
+            questionSelect.innerHTML = ''; // Clear existing options
+
+            if (!subjectInfo) return;
+
+            for (let i = 1; i <= subjectInfo.maxQuestions; i++) {
+                const option = document.createElement('option');
+                option.value = i;
+                option.textContent = i;
+                questionSelect.appendChild(option);
+            }
+            // Ensure the first question is selected by default if available
+            if (questionSelect.options.length > 0) {
+                questionSelect.value = questionSelect.options[0].value;
+            }
+        }
+
+        function populateSubjectDropdown() {
+            for (const key in subjectsData) {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = key;
+                subjectSelect.appendChild(option);
+            }
+        }
+
+        // Initial setup
+        populateSubjectDropdown();
+        // Set initial subject and populate its questions
+        if (subjectSelect.options.length > 0) {
+            subjectSelect.value = subjectSelect.options[0].value; // Select the first subject by default
+            populateQuestionDropdown(subjectSelect.value);
+        }
+        updateCommands(); // Update commands for the default selection
+
+        // Event Listeners
+        subjectSelect.addEventListener('change', function() {
+            populateQuestionDropdown(this.value);
+            updateCommands();
+        });
+
+        questionSelect.addEventListener('change', function() {
+            updateCommands();
+        });
+    </script>
+</body>
+</html>
