@@ -16,9 +16,23 @@ def index():
 
 @app.route('/dms/<q>')
 def home(q):
-    f = open(f"Q{q}.py", "r")
+    f = open(f"dms/Q{q}.py", "r")
     code = f.read()
     return code
+
+@app.route('/dms/<q>/read')
+def read(q):
+    f = open(f"dms/Q{q}.py", "r")
+    code = f.read()
+    return """<!doctype html>
+<html>
+<head>
+    <title>Document</title>
+</head>
+<body>
+<pre>""" + code + """</pre>
+</body>
+</html>"""
 
 @app.route('/query')
 def query():

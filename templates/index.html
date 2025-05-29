@@ -31,6 +31,27 @@
             text-align: center;
             margin-bottom: 20px;
         }
+        .instructions-section h3 { /* More specific selector for instruction heading */
+            text-align: left;
+            margin-bottom: 15px;
+            color: #e0e0e0; /* Lighter color for instruction heading */
+        }
+        .instructions-section ul {
+            list-style-type: decimal; /* Numbered list */
+            padding-left: 20px; /* Indent list items */
+            margin-bottom: 25px;
+        }
+        .instructions-section li {
+            color: #c0c0c0;
+            margin-bottom: 8px;
+        }
+        .instructions-section code { /* Style for inline code in instructions */
+            background-color: #2c2c2c;
+            color: #d4d4d4;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-family: 'Courier New', Courier, monospace;
+        }
         p {
             color: #c0c0c0; /* Slightly dimmer light color for paragraphs */
             margin-bottom: 10px; /* Adjusted margin */
@@ -109,6 +130,21 @@
         <h1>KMV Cheatsheet</h1>
         <!-- <h3>Made with ❤️ by Elon Musk Ka Bhai</h3> -->
 
+        <div class="instructions-section">
+            <h3>How to Get Your Program Files:</h3>
+            <ul>
+                <li>Press the <code>Windows Key</code> + <code>R</code> on your keyboard simultaneously. This will open the "Run" dialog box.</li>
+                <li>In the "Run" dialog box, type <code>cmd</code> and press <code>Enter</code> or click "OK". This will open the Command Prompt (a black window where you can type commands).</li>
+                <li>In the Command Prompt, type <code>cd Desktop</code> (make sure 'D' in Desktop is capitalized if your folder is named that way) and press <code>Enter</code>. This command changes your current location in the Command Prompt to your Desktop folder.</li>
+                <li>Next, type <code>code .</code> (that's 'code', then a space, then a period) and press <code>Enter</code>. This command will attempt to open your Desktop folder in Visual Studio Code (VS Code). If VS Code isn't installed or not in your system's PATH, this step might not work as expected. You can skip this if you just want the files.</li>
+                <li>Select the subject and question number from the dropdowns below to generate the correct command.</li>
+                <li>Copy the command shown under "To place it inside a file..." by clicking the "Copy" button next to it.</li>
+                <li>Go back to the Command Prompt window (that you opened in step 2, which should now be in your Desktop directory).</li>
+                <li>Right-click inside the Command Prompt window to paste the copied command, or press <code>Ctrl</code> + <code>V</code>. Then press <code>Enter</code>.</li>
+                <li>After pressing <code>Enter</code>, the command will run. It will download the question file and save it directly to your Desktop with the name shown in the command (e.g., <code>q1.py</code>).</li>
+            </ul>
+        </div>
+
         <div class="controls subject-controls">
             <label for="subjectSelect">Select Subject:</label>
             <select id="subjectSelect">
@@ -134,6 +170,12 @@
             <pre id="curlCommandFile"></pre>
             <button class="copy-button" data-target-id="curlCommandFile">Copy</button>
         </div>
+
+        <p>Or, view the question directly in your browser at this URL:</p>
+        <div class="code-block-wrapper">
+            <pre id="browserUrlDisplay"></pre>
+            <button class="copy-button" data-target-id="browserUrlDisplay">Copy</button>
+        </div>
     </div>
 
     <script>
@@ -141,6 +183,7 @@
         const questionSelect = document.getElementById('questionNumber');
         const curlTerminalPre = document.getElementById('curlCommandTerminal');
         const curlFilePre = document.getElementById('curlCommandFile');
+        const browserUrlPre = document.getElementById('browserUrlDisplay'); 
         const copyButtons = document.querySelectorAll('.copy-button');
 
         const subjectsData = {
@@ -160,11 +203,13 @@
             if (!subjectInfo || !selectedQuestionNum) {
                 curlTerminalPre.textContent = "Please select a subject and question.";
                 curlFilePre.textContent = "";
+                browserUrlPre.textContent = ""; // Clear browser URL too
                 return;
             }
 
             curlTerminalPre.textContent = `curl ${subjectInfo.baseUrl}${selectedQuestionNum}`;
             curlFilePre.textContent = `curl ${subjectInfo.baseUrl}${selectedQuestionNum} -o ${subjectInfo.filePrefix}${selectedQuestionNum}.py`;
+            browserUrlPre.textContent = `${subjectInfo.baseUrl}${selectedQuestionNum}/read`; // Set browser URL
         }
 
         function populateQuestionDropdown(subjectKey) {
@@ -203,6 +248,13 @@
         }
         updateCommands(); // Update commands for the default selection
 
+        // Set initial text for the "Open Link" button
+        copyButtons.forEach(button => {
+            if (button.getAttribute('data-target-id') === 'browserUrlDisplay') {
+                button.textContent = 'Open Link';
+            }
+        });
+
         // Event Listeners
         subjectSelect.addEventListener('change', function() {
             populateQuestionDropdown(this.value);
@@ -218,18 +270,26 @@
                 const targetId = button.getAttribute('data-target-id');
                 const targetPre = document.getElementById(targetId);
                 if (targetPre) {
-                    navigator.clipboard.writeText(targetPre.textContent)
-                        .then(() => {
-                            const originalText = button.textContent;
-                            button.textContent = 'Copied!';
-                            setTimeout(() => {
-                                button.textContent = originalText;
-                            }, 1500); // Revert after 1.5 seconds
-                        })
-                        .catch(err => {
-                            console.error('Failed to copy: ', err);
-                            // You could add user feedback here for the error case
-                        });
+                    if (targetId === 'browserUrlDisplay') {
+                        // Action for "Open Link" button
+                        if (targetPre.textContent && targetPre.textContent !== "Please select a subject and question.") {
+                            window.open(targetPre.textContent, '_blank');
+                        }
+                    } else {
+                        // Action for other "Copy" buttons
+                        navigator.clipboard.writeText(targetPre.textContent)
+                            .then(() => {
+                                const originalText = button.textContent; // Should be "Copy"
+                                button.textContent = 'Copied!';
+                                setTimeout(() => {
+                                    button.textContent = originalText;
+                                }, 1500); // Revert after 1.5 seconds
+                            })
+                            .catch(err => {
+                                console.error('Failed to copy: ', err);
+                                // You could add user feedback here for the error case
+                            });
+                    }
                 }
             });
         });
