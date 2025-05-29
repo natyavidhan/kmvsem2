@@ -1,3 +1,9 @@
+"""
+4. For any number n, write a program to list all the solutions of the equation x, + x; + x, +
+ot x, =C, where C is a constant (C<=10) and x,, x2.x3,....X, are nonnegalive integers,
+using brute force strategy.
+"""
+
 n = int(input("Enter number of variables (n): "))
 C = int(input("Enter constant (C ≤ 10): "))
 if C > 10 or n <= 0:

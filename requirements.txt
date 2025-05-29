@@ -1,1 +1,3 @@
 flask
+dotenv-python
+google-genai

@@ -1,3 +1,8 @@
+"""
+6. Write a Program to check if'a given graph is a complete graph. Represent the graph using
+the Adjacency Matrix representation.
+"""
+
 def is_complete_graph_matrix(adj_matrix):
     num_vertices = len(adj_matrix)
     is_complete = True

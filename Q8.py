@@ -1,3 +1,8 @@
+"""
+8. Write a Program to accept a directed graph G and compute the in-degrce and out-degree
+of each vertex.
+"""
+
 def compute_degrees(adj_matrix):
     size = len(adj_matrix)
     in_degrees = [0] * size
