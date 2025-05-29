@@ -37,10 +37,11 @@ def read(q):
 @app.route('/query')
 def query():
     q = request.args.get('q')
-    if not q:
-        return "No query provided", 400
-    
-    print(f"Received query: {q}")
+    ques = request.args.get('ques')
+
+    if ques:
+        ques = open(f"dms/Q{ques}.py", "r").read()
+        q = f"{ques} \n\n{q.replace("-", " ")}"
 
     response = client.models.generate_content(
         model="gemini-2.0-flash", contents=q
