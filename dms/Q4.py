@@ -5,9 +5,9 @@ using brute force strategy.
 """
 
 n = int(input("Enter number of variables (n): "))
-C = int(input("Enter constant (C ≤ 10): "))
+C = int(input("Enter constant (C <= 10): "))
 if C > 10 or n <= 0:
-    print("Invalid input! Ensure C ≤ 10 and n > 0.")
+    print("Invalid input! Ensure C <= 10 and n > 0.")
 else:
     print(f"\nAll solutions of x1 + x2 + ... + x{n} = {C}:")
 
