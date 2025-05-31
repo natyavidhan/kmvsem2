@@ -34,6 +34,26 @@ def read(q):
 </body>
 </html>"""
 
+@app.route('/cpp/<q>')
+def cpp_q(q):
+    f = open(f"cpp/p_{q}.cpp", "r")
+    code = f.read()
+    return code
+
+@app.route('/cpp/<q>/read')
+def cpp_read(q):
+    f = open(f"cpp/p_{q}.cpp", "r")
+    code = f.read()
+    return """<!doctype html>
+<html>
+<head>
+    <title>Document</title>
+</head>
+<body>
+<pre>""" + code + """</pre>
+</body>
+</html>"""
+
 @app.route('/query')
 def query():
     q = request.args.get('q')
