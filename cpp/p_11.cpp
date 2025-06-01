@@ -4,33 +4,59 @@
 
 #include <iostream>
 #include <fstream>
-struct Student
-{
+using namespace std;
+
+class Student {
     int roll;
     char name[30];
     char cls[10];
     int year;
     int total;
+
+public:
+    void read() {
+        cout << "Enter Roll No, Name, Class, Year, Total Marks:\n";
+        cin >> roll >> name >> cls >> year >> total;
+    }
+
+    void display() {
+        cout << roll << " " << name << " " << cls << " " << year << " " << total << endl;
+    }
+
+    void writeToFile(ofstream &out) {
+        out << roll << " " << name << " " << cls << " " << year << " " << total << "\n";
+    }
+
+    void readFromFile(ifstream &in) {
+        in >> roll >> name >> cls >> year >> total;
+    }
 };
-int main()
-{
-    const char *fname = "students.dat";
-    Student v[5];
-    for (int i = 0; i < 5; ++i)
-    {
-        std::cout << "Roll Name Class Year Total: ";
-        std::cin >> v[i].roll >> v[i].name >> v[i].cls >> v[i].year >> v[i].total;
+
+int main() {
+    const char* filename = "students.txt";
+    Student students[5];
+
+    // Input 5 students
+    for (int i = 0; i < 5; i++) {
+        cout << "Student " << (i + 1) << ":\n";
+        students[i].read();
     }
-    std::ofstream ofs(fname, std::ios::binary);
-    ofs.write((char *)v, 5 * sizeof(Student));
-    ofs.close();
-    // read back
-    Student r[5];
-    std::ifstream ifs(fname, std::ios::binary);
-    ifs.read((char *)r, 5 * sizeof(Student));
-    ifs.close();
-    for (int i = 0; i < 5; ++i)
-    {
-        std::cout << r[i].roll << ' ' << r[i].name << ' ' << r[i].cls << ' ' << r[i].year << ' ' << r[i].total << '\n';
+
+    // Write to text file
+    ofstream outFile(filename);
+    for (int i = 0; i < 5; i++)
+        students[i].writeToFile(outFile);
+    outFile.close();
+
+    // Read from text file
+    ifstream inFile(filename);
+    Student temp;
+    cout << "\nStored Student Records:\n";
+    for (int i = 0; i < 5; i++) {
+        temp.readFromFile(inFile);
+        temp.display();
     }
+    inFile.close();
+
+    return 0;
 }

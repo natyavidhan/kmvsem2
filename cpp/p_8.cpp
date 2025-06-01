@@ -7,95 +7,106 @@
 // c. Transpose
 
 #include <iostream>
-#include <stdexcept>
-class Matrix
-{
-    int m[10][10];
-    int r, c;
+using namespace std;
+
+class Matrix {
+    int data[10][10];
+    int rows, cols;
 
 public:
-    Matrix(int rows, int cols) : r(rows), c(cols) {}
-    int rows() const { return r; }
-    int cols() const { return c; }
-    int &at(int row, int col) { return m[row][col]; }
-    const int &at(int row, int col) const { return m[row][col]; }
-    Matrix operator+(const Matrix &b) const
-    {
-        if (r != b.r || c != b.c)
-            throw std::runtime_error("Dim mismatch");
-        Matrix res(r, c);
-        for (int i = 0; i < r; ++i)
-            for (int j = 0; j < c; ++j)
-                res.m[i][j] = m[i][j] + b.m[i][j];
-        return res;
+    Matrix(int r, int c) {
+        rows = r;
+        cols = c;
     }
-    Matrix operator*(const Matrix &b) const
-    {
-        if (c != b.r)
-            throw std::runtime_error("Dim mismatch");
-        Matrix res(r, b.c);
-        for (int i = 0; i < r; ++i)
-            for (int j = 0; j < b.c; ++j)
-            {
-                int sum = 0;
-                for (int k = 0; k < c; ++k)
-                    sum += m[i][k] * b.m[k][j];
-                res.m[i][j] = sum;
-            }
-        return res;
+
+    void read() {
+        cout << "Enter elements (" << rows << "x" << cols << "):\n";
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                cin >> data[i][j];
     }
-    Matrix transpose() const
-    {
-        Matrix t(c, r);
-        for (int i = 0; i < r; ++i)
-            for (int j = 0; j < c; ++j)
-                t.m[j][i] = m[i][j];
-        return t;
-    }
-    void read()
-    {
-        for (int i = 0; i < r; ++i)
-            for (int j = 0; j < c; ++j)
-                std::cin >> m[i][j];
-    }
-    void print() const
-    {
-        for (int i = 0; i < r; ++i)
-        {
-            for (int j = 0; j < c; ++j)
-                std::cout << m[i][j] << ' ';
-            std::cout << '\n';
+
+    void print() {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++)
+                cout << data[i][j] << " ";
+            cout << endl;
         }
     }
+
+    Matrix add(Matrix b) {
+        if (rows != b.rows || cols != b.cols)
+            throw "Addition not possible (dimension mismatch)";
+        Matrix result(rows, cols);
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                result.data[i][j] = data[i][j] + b.data[i][j];
+        return result;
+    }
+
+    Matrix multiply(Matrix b) {
+        if (cols != b.rows)
+            throw "Multiplication not possible (invalid sizes)";
+        Matrix result(rows, b.cols);
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < b.cols; j++) {
+                result.data[i][j] = 0;
+                for (int k = 0; k < cols; k++)
+                    result.data[i][j] += data[i][k] * b.data[k][j];
+            }
+        }
+        return result;
+    }
+
+    Matrix transpose() {
+        Matrix result(cols, rows);
+        for (int i = 0; i < rows; i++)
+            for (int j = 0; j < cols; j++)
+                result.data[j][i] = data[i][j];
+        return result;
+    }
+
+    int getRows() { return rows; }
+    int getCols() { return cols; }
 };
-int main()
-{
-    try
-    {
-        int r1, c1, r2, c2;
-        std::cout << "Rows Cols M1: ";
-        std::cin >> r1 >> c1;
-        Matrix A(r1, c1);
-        A.read();
-        std::cout << "Rows Cols M2: ";
-        std::cin >> r2 >> c2;
-        Matrix B(r2, c2);
-        B.read();
-        int ch;
-        do
-        {
-            std::cout << "\n1.Sum 2.Product 3.Transpose A 0.Exit: ";
-            std::cin >> ch;
-            if (ch == 1)
-                (A + B).print();
-            else if (ch == 2)
-                (A * B).print();
-            else if (ch == 3)
-                A.transpose().print();
-        } while (ch);
-    }
-    catch (const std::exception &e)
-    {
-        std::cerr << e.what() << '\n';
-    }
+
+int main() {
+    int r1, c1, r2, c2;
+    cout << "Enter rows and columns of Matrix A: ";
+    cin >> r1 >> c1;
+    Matrix A(r1, c1);
+    A.read();
+
+    cout << "Enter rows and columns of Matrix B: ";
+    cin >> r2 >> c2;
+    Matrix B(r2, c2);
+    B.read();
+
+    int choice;
+    do {
+        cout << "\nMenu:\n1. Add\n2. Multiply\n3. Transpose A\n0. Exit\n";
+        cout << "Enter your choice: ";
+        cin >> choice;
+    
+        try {
+            if (choice == 1) {
+                Matrix result = A.add(B);
+                cout << "Sum:\n";
+                result.print();
+            } else if (choice == 2) {
+                Matrix result = A.multiply(B);
+                cout << "Product:\n";
+                result.print();
+            } else if (choice == 3) {
+                Matrix result = A.transpose();
+                cout << "Transpose of A:\n";
+                result.print();
+            }
+        } catch (const char* error) {
+            cout << "Error: " << error << endl;
+        }
+
+    } while (choice != 0);
+
+    return 0;
 }

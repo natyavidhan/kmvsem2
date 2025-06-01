@@ -55,12 +55,16 @@ void reverse(char *s)
     for (size_t i = 0; i < l / 2; ++i)
         std::swap(s[i], s[l - 1 - i]);
 }
+// this is a strings
+// 
 
 void insert(char *dest, const char *src, size_t pos)
 {
     size_t dlen = length(dest), slen = length(src);
+    
     for (size_t i = dlen + 1; i >= pos + 1; --i)
         dest[i + slen - 1] = dest[i - 1];
+
     for (size_t i = 0; i < slen; ++i)
         dest[pos + i] = src[i];
 }
