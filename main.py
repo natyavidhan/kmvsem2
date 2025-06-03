@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, send_file
 import os
 
 from dotenv import load_dotenv
@@ -53,6 +53,11 @@ def cpp_read(q):
 <pre>""" + code + """</pre>
 </body>
 </html>"""
+
+@app.route("/pc")
+def pc():
+    #  send pc_pracs.xlsx
+    return send_file("pc_pracs.xlsx")
 
 @app.route('/query')
 def query():
