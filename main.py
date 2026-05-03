@@ -4,9 +4,9 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 
-from google import genai
+from groq import Groq
 
-client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
+client = Groq(api_key=os.getenv("GROQ_KEY"))
 
 app = Flask(__name__)
 
@@ -68,11 +68,12 @@ def query():
         ques = open(f"dms/Q{ques}.py", "r").read()
         q = f"{ques} \n\n{q.replace("-", " ")}"
 
-    response = client.models.generate_content(
-        model="gemini-2.0-flash", contents=q
+    response = client.chat.completions.create(
+        model="openai/gpt-oss-120b",
+        messages=[{"role": "user", "content": q}]
     )
     
-    return response.text
+    return response.choices[0].message.content
 
 if __name__ == '__main__':
     app.run(debug=True)
